@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -16,8 +17,8 @@ import java.util.Scanner;
 public class TaskManager {
 
     public static void main(String[] args) {
+        List<CSVRecord> tasks = readCSV("tasks.csv");
         printMenu();
-        String[][] tasks = readCSV("tasks.csv");
     }
 
     public static void printMenu() {
@@ -32,7 +33,7 @@ public class TaskManager {
         System.exit(statusCode);
     }
 
-    public static String[][] readCSV(String filename) {
+    public static List<CSVRecord> readCSV(String filename) {
         Path file = Paths.get(filename);
         if (!Files.exists(file)) {
             System.out.println("The tasks file does not exist");
@@ -40,10 +41,7 @@ public class TaskManager {
             try {
                 Reader reader = Files.newBufferedReader(file);
                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
-                List<CSVRecord> allRecords = csvParser.getRecords();
-                return allRecords.stream()
-                        .map(r -> r.stream().toArray(String[]::new))
-                        .toArray(String[][]::new);
+                return csvParser.getRecords();
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + " file");
                 programExit(1);

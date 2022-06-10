@@ -2,12 +2,14 @@ package pl.coderslab;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import pl.coderslab.commands.AddTask;
 import pl.coderslab.commands.Exit;
 import pl.coderslab.commands.ListTasks;
 import pl.coderslab.commands.RemoveTask;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -60,6 +62,7 @@ public class TaskManager {
     }
 
     public static void programExit(int statusCode, String message) {
+        writeCSV(tasks,  "tasks.csv");
         System.out.println(message);
         scanner.close();
         System.exit(statusCode);
@@ -89,6 +92,20 @@ public class TaskManager {
             } catch (Exception e) {
                 programExit(1, e.getMessage());
             }
+        }
+    }
+
+    private static void writeCSV(List<Task> tasks, String filename) {
+        Path file = Paths.get(filename);
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(file);
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+            for(Task t : tasks) {
+                csvPrinter.printRecord(t.description(), t.date(), t.important());
+            }
+            csvPrinter.flush();
+        } catch (IOException e) {
+            System.out.println("Couldn't write to file " + filename + " file");
         }
     }
 }

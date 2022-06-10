@@ -1,10 +1,9 @@
 package pl.coderslab;
-
-import java.util.Date;
+import java.time.LocalDate;
 
 public record Task(
         String description,
-        Date date,
+        LocalDate date,
         boolean done
 ) {
 }
